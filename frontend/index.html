@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crowd Ease - Crowd Management System</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/styles.css?v=2">
+</head>
+<body>
+    <!-- ===================================
+         Header Section
+         =================================== -->
+    <header class="header">
+        <div class="logo">
+            <img src="/static/Logo.png" alt="CrowdEase" class="logo-img">
+            <h1>Crowd Ease</h1>
+        </div>
+        <div class="header-stats">
+            <div class="stat-pill">
+                <div class="icon blue"><i class="fas fa-users"></i></div>
+                <div>
+                    <div class="value" id="total-people">0</div>
+                    <div class="label">Total People</div>
+                </div>
+            </div>
+            <div class="stat-pill">
+                <div class="icon green"><i class="fas fa-video"></i></div>
+                <div>
+                    <div class="value" id="active-cameras">4</div>
+                    <div class="label">Cameras</div>
+                </div>
+            </div>
+            <div class="stat-pill">
+                <div class="icon red"><i class="fas fa-bell"></i></div>
+                <div>
+                    <div class="value" id="alert-count">0</div>
+                    <div class="label">Alerts</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================================
+         Main Container
+         =================================== -->
+    <main class="main-container">
+        <!-- Left Section - Camera Feeds -->
+        <div class="left-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-video"></i>
+                        Camera Feeds
+                    </div>
+                    <div class="live-badge">
+                        <span class="live-dot"></span>
+                        LIVE
+                    </div>
+                </div>
+                <div class="cameras-grid">
+                    <!-- Camera 1 - Main Entrance -->
+                    <div class="camera-card active" data-camera="cam1" onclick="selectCamera('cam1')">
+                        <div class="camera-top">
+                            <div class="camera-info">
+                                <div class="camera-num">1</div>
+                                <div>
+                                    <div class="camera-name">Main Entrance</div>
+                                    <div class="camera-loc">Gate A - North</div>
+                                </div>
+                            </div>
+                            <div class="camera-status">
+                                <span class="trend-indicator" id="cam1-trend"></span>
+                                <span class="status-dot online" id="cam1-dot"></span>
+                                <span id="cam1-status">Live</span>
+                            </div>
+                        </div>
+                        <div class="camera-feed" id="cam1-feed">
+                            <img id="cam1-img" src="" style="display:none;">
+                            <div class="placeholder">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Connecting...
+                            </div>
+                        </div>
+                        <div class="camera-bottom">
+                            <div class="camera-stat">
+                                <div class="camera-stat-value normal" id="cam1-count">0</div>
+                                <div class="camera-stat-label">People</div>
+                            </div>
+                            <div class="camera-stat">
+                                <div class="camera-stat-value" id="cam1-density">0%</div>
+                                <div class="camera-stat-label">Density</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Camera 2 - Stage Area -->
+                    <div class="camera-card" data-camera="cam2" onclick="selectCamera('cam2')">
+                        <div class="camera-top">
+                            <div class="camera-info">
+                                <div class="camera-num">2</div>
+                                <div>
+                                    <div class="camera-name">Stage Area</div>
+                                    <div class="camera-loc">Main Stage</div>
+                                </div>
+                            </div>
+                            <div class="camera-status">
+                                <span class="trend-indicator" id="cam2-trend"></span>
+                                <span class="status-dot simulated" id="cam2-dot"></span>
+                                <span id="cam2-status">Demo</span>
+                            </div>
+                        </div>
+                        <div class="camera-feed" id="cam2-feed">
+                            <div class="placeholder">
+                                <i class="fas fa-chart-line"></i>
+                                Simulated
+                            </div>
+                        </div>
+                        <div class="camera-bottom">
+                            <div class="camera-stat">
+                                <div class="camera-stat-value normal" id="cam2-count">0</div>
+                                <div class="camera-stat-label">People</div>
+                            </div>
+                            <div class="camera-stat">
+                                <div class="camera-stat-value" id="cam2-density">0%</div>
+                                <div class="camera-stat-label">Density</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Camera 3 - Food Court -->
+                    <div class="camera-card" data-camera="cam3" onclick="selectCamera('cam3')">
+                        <div class="camera-top">
+                            <div class="camera-info">
+                                <div class="camera-num">3</div>
+                                <div>
+                                    <div class="camera-name">Food Court</div>
+                                    <div class="camera-loc">East Wing</div>
+                                </div>
+                            </div>
+                            <div class="camera-status">
+                                <span class="trend-indicator" id="cam3-trend"></span>
+                                <span class="status-dot simulated" id="cam3-dot"></span>
+                                <span id="cam3-status">Demo</span>
+                            </div>
+                        </div>
+                        <div class="camera-feed" id="cam3-feed">
+                            <div class="placeholder">
+                                <i class="fas fa-chart-line"></i>
+                                Simulated
+                            </div>
+                        </div>
+                        <div class="camera-bottom">
+                            <div class="camera-stat">
+                                <div class="camera-stat-value normal" id="cam3-count">0</div>
+                                <div class="camera-stat-label">People</div>
+                            </div>
+                            <div class="camera-stat">
+                                <div class="camera-stat-value" id="cam3-density">0%</div>
+                                <div class="camera-stat-label">Density</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Camera 4 - Exit Gate -->
+                    <div class="camera-card" data-camera="cam4" onclick="selectCamera('cam4')">
+                        <div class="camera-top">
+                            <div class="camera-info">
+                                <div class="camera-num">4</div>
+                                <div>
+                                    <div class="camera-name">Exit Gate</div>
+                                    <div class="camera-loc">Gate B - South</div>
+                                </div>
+                            </div>
+                            <div class="camera-status">
+                                <span class="trend-indicator" id="cam4-trend"></span>
+                                <span class="status-dot simulated" id="cam4-dot"></span>
+                                <span id="cam4-status">Demo</span>
+                            </div>
+                        </div>
+                        <div class="camera-feed" id="cam4-feed">
+                            <div class="placeholder">
+                                <i class="fas fa-chart-line"></i>
+                                Simulated
+                            </div>
+                        </div>
+                        <div class="camera-bottom">
+                            <div class="camera-stat">
+                                <div class="camera-stat-value normal" id="cam4-count">0</div>
+                                <div class="camera-stat-label">People</div>
+                            </div>
+                            <div class="camera-stat">
+                                <div class="camera-stat-value" id="cam4-density">0%</div>
+                                <div class="camera-stat-label">Density</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section - Analytics -->
+        <div class="right-section">
+            <!-- Analytics Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-chart-area"></i>
+                        Analytics
+                    </div>
+                    <div class="export-controls">
+                        <button class="export-btn" onclick="downloadReport('csv')" title="Download CSV Report">
+                            <i class="fas fa-file-csv"></i>
+                        </button>
+                        <button class="export-btn" onclick="downloadReport('json')" title="Download JSON Report">
+                            <i class="fas fa-file-code"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="analytics-content">
+                    <div class="selected-cam">
+                        <i class="fas fa-video"></i>
+                        <span id="selected-name">Main Entrance</span>
+                    </div>
+                    <div class="chart-box">
+                        <div class="chart-container">
+                            <canvas id="chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="icon blue"><i class="fas fa-users"></i></div>
+                            <div class="value" id="cur-count">0</div>
+                            <div class="label">Current</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="icon green"><i class="fas fa-percentage"></i></div>
+                            <div class="value" id="cur-density">0%</div>
+                            <div class="label">Density</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="icon orange"><i class="fas fa-arrow-up"></i></div>
+                            <div class="value" id="peak">0</div>
+                            <div class="label">Peak</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="icon purple"><i class="fas fa-chart-simple"></i></div>
+                            <div class="value" id="avg">0</div>
+                            <div class="label">Average</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===================================
+         Floating Action Buttons
+         =================================== -->
+    <div class="fab-container">
+        <!-- Missing Persons FAB -->
+        <div class="fab missing-fab" id="missing-fab" onclick="openMissingPersonsPanel()">
+            <i class="fas fa-user-slash"></i>
+            <span class="fab-badge" id="missing-fab-badge"></span>
+        </div>
+        
+        <!-- Chatbot FAB -->
+        <div class="fab chatbot-fab" id="chatbot-fab" onclick="toggleChatbot()">
+            <i class="fas fa-robot" id="fab-icon"></i>
+            <span class="fab-badge" id="fab-badge">0</span>
+        </div>
+    </div>
+
+    <!-- ===================================
+         Chatbot Popup Modal
+         =================================== -->
+    <div class="chatbot-popup" id="chatbot-popup">
+        <div class="chatbot-popup-header">
+            <div class="chatbot-popup-title">
+                <div class="chatbot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h3>AI Assistant</h3>
+                    <span class="chatbot-status">
+                        <span class="status-indicator"></span>
+                        Online
+                    </span>
+                </div>
+            </div>
+            <button class="chatbot-close" onclick="toggleChatbot()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chatbot-quick-btns">
+            <button class="quick-btn" onclick="quickMsg('status')">
+                <i class="fas fa-info-circle"></i> Status
+            </button>
+            <button class="quick-btn" onclick="quickMsg('predict')">
+                <i class="fas fa-crystal-ball"></i> Predict
+            </button>
+            <button class="quick-btn" onclick="quickMsg('alerts')">
+                <i class="fas fa-bell"></i> Alerts
+            </button>
+            <button class="quick-btn" onclick="quickMsg('help')">
+                <i class="fas fa-question"></i> Help
+            </button>
+        </div>
+        <div class="chatbot-messages" id="messages">
+            <div class="message bot">
+                👋 Welcome! I'll monitor crowds and alert you automatically.<br><br>
+                Type <strong>help</strong> to see commands.
+                <div class="msg-time">System</div>
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="input" placeholder="Ask about crowd status...">
+            <button onclick="send()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================================
+         Missing Persons Modal
+         =================================== -->
+    <div class="modal-overlay" id="missing-persons-modal" onclick="closeMissingPersonsPanel()">
+    <div class="missing-persons-modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title">
+                <i class="fas fa-user-slash"></i>
+                <h2>Missing Persons</h2>
+            </div>
+            <button class="modal-close" onclick="closeMissingPersonsPanel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <h3><i class="fas fa-plus-circle"></i> Add Missing Person</h3>
+                <div class="upload-form">
+                    <div class="upload-preview" id="upload-preview" onclick="event.stopPropagation(); document.getElementById('person-photo').click()">
+                        <i class="fas fa-camera"></i>
+                        <span>Click to upload photo</span>
+                    </div>
+                    <input type="file" id="person-photo" accept="image/*" onchange="previewPhoto(event)" style="display:none;">
+                    <div class="upload-details">
+                        <input type="text" id="person-name" placeholder="Enter person's name" class="name-input" onclick="event.stopPropagation()">
+                        <button class="add-btn" onclick="event.stopPropagation(); addMissingPerson()">
+                            <i class="fas fa-plus"></i> Add Person
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Persons List -->
+            <div class="persons-section">
+                <h3><i class="fas fa-list"></i> Registered Persons <span class="count" id="persons-count">(0)</span></h3>
+                <div class="persons-list" id="persons-list">
+                    <div class="empty-state" id="empty-state">
+                        <i class="fas fa-user-friends"></i>
+                        <p>No missing persons registered</p>
+                        <span>Upload photos above to start tracking</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <p><i class="fas fa-info-circle"></i> Faces will be automatically matched against all camera feeds</p>
+        </div>
+    </div>
+    </div>
+
+    <!-- Custom Scripts -->
+    <script src="/static/js/app.js?v=3"></script>
+</body>
+</html>
