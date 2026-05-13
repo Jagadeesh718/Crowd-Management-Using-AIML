@@ -69,6 +69,11 @@ function showCrowdAlert(camId, count, severity) {
     // Add to chatbot
     addMsg(message, msgClass);
     
+    // Add to notification panel
+    if (typeof addNotification === 'function') {
+        addNotification(message, severity);
+    }
+    
     // Update alert count
     alerts++;
     document.getElementById('alert-count').textContent = alerts;
@@ -192,6 +197,8 @@ socket.on('camera_update', (d) => {
     
     updateCams(d);
     if (d[selected]) updateStats(d[selected]);
+    // Update simulated camera bars
+    if (typeof updateSimBars === 'function') updateSimBars(d);
 });
 
 socket.on('new_alert', (a) => {
